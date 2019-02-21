@@ -8,16 +8,15 @@ class MovieTest(TestCase):
 
     def setUp(self):
         Movie.objects.create(
-            title="Fight Club", year="1997", rated="R", released="20 Oct 1997", runtime=120,
-            genre="Crime",
-            director="David Fincher", writer="Chuck Palachniuk", actors="Edward Norton, Brad Pitt",
-            plot="A yippie finds himself in a strange life situation", language="EN", country="US", awards="Oscars",
-            poster="fightclub.com/poster.jpg", metascore=95, rating="[{'imdb': '7/10'}, {'usdaily: 8/10'}]",
-            imdb_rating="8.8", imdb_votes="NA", imdb_id="1000001", movie_type="NA", DVD="NA", box_office='NA',
-            production="US", website="fightclub.com"
+            Title='Fight Club', Year='1997', Rated='R', Released='1997', Runtime='120', Genre='Crime',
+            Director='David Fincher', Writer='Chuck Palachniuk', Actors='Edward Norton, Brad Pitt',
+            Plot='A New-York Yippie Finds Himself In A Very Strange Situation', Language='English',
+            Country='US', Awards='Oscars', Poster='fightclub.com/poster.jpg', Metascore='97', imdbRating='9.8',
+            imdbVotes='14435', imdbID='19929495', Type='Movie', DVD='1999', BoxOffice='16669649443',
+            Production='Sony', Website='fightclub.com', Response='True',
         )
 
     def test_movie(self):
-        fight_club = Movie.objects.get(title='Fight Club')
+        fight_club = Movie.objects.get(Title='Fight Club')
         self.assertEqual(fight_club.__repr__(), "Fight Club")
 

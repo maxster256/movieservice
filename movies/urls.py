@@ -6,8 +6,8 @@ from rest_framework.routers import SimpleRouter
 from .views import MovieCommentsViewSet, TopListView, MovieViewSet
 
 router = SimpleRouter()
-router.register("comments", MovieCommentsViewSet, basename='comment')
-router.register("movies", MovieViewSet, basename='movies')
+router.register("comments", MovieCommentsViewSet, base_name='comment')
+router.register("movies", MovieViewSet, base_name='movies')
 
 
 urlpatterns = [

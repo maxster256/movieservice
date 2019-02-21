@@ -25,6 +25,7 @@ class MovieRatingSerializer(serializers.ModelSerializer):
         model = MovieRating
         fields = ('Source', 'Value')
 
+
 class MovieSerializer(WritableNestedModelSerializer):
     Ratings = MovieRatingSerializer(many=True, allow_null=True)
 
