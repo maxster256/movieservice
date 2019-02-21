@@ -1,30 +1,49 @@
+import datetime
+
+import django_filters
 import requests
+from django.db.models import Count, Prefetch
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.utils import json
+from rest_framework import status, generics, viewsets
+from rest_framework.views import APIView
 
-from .models import Movie
-from .serializers import MovieSerializer
+from .models import Movie, MovieComment
+from .serializers import MovieSerializer, MovieCommentSerializer, TopSerializer
 
 
-# @api_view(['GET', 'DELETE', 'PUT'])
-# def get_delete_update_puppy(request, pk):
-#     try:
-#         puppy = Puppy.objects.get(pk=pk)
-#     except Puppy.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-#
-#     # get details of a single puppy
-#     if request.method == 'GET':
-#         return Response({})
-#     # delete a single puppy
-#     elif request.method == 'DELETE':
-#         return Response({})
-#     # update details of a single puppy
-#     elif request.method == 'PUT':
-#         return Response({})
+class MovieCommentsViewSet(viewsets.ModelViewSet):
+    queryset = MovieComment.objects.all()
+    serializer_class = MovieCommentSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_fields = ('CommentedMovieID',)
+
+
+class Top(viewsets.ModelViewSet):
+    queryset = Movie.objects.all()
+    serializer_class = TopSerializer
+
+    def get_queryset(self):
+        # Returns number of comments for each movie ID in descending order
+        counted_movie_comments = MovieComment.objects.filter(
+            Date__range=(datetime.date(2019, 2, 20), datetime.date(2019, 2, 21))
+        ).values('CommentedMovieID_id').annotate(
+            CommentsCount=Count('CommentedMovieID')
+        ).order_by('-CommentsCount')
+
+        # Add ranking position to each of the movies
+        prev_count, prev_rank_pos = None, 0
+
+        for movie in counted_movie_comments:
+
+            if prev_count != movie['CommentsCount']:
+                prev_rank_pos += 1
+                prev_count = movie['CommentsCount']
+
+            movie['RankPosition'] = prev_rank_pos
+
+        return counted_movie_comments
 
 
 @api_view(['GET', 'POST'])
@@ -37,23 +56,23 @@ def movies(request):
 
     elif request.method == 'POST':
         # Insert new movie
-        movie_name = request.data.get('name')
-        print("REQUEST BODY: {}".format(movie_name))
 
-        payload = {'t': movie_name, 'apikey': 'b3a374e7'}
-        omdb_data = requests.get('https://www.omdbapi.com/', params=payload)
+        print("REQUEST DATA: {}".format(request.data))
 
-        result = omdb_data.json()
-        print(result)
+        if 'title' in request.data:
+            movie_name = request.data.get('title')
 
-        serializer = MovieSerializer(data=result)
+            payload = {'t': movie_name, 'apikey': 'b3a374e7'}
+            omdb_data = requests.get('https://www.omdbapi.com/', params=payload)
+            result = omdb_data.json()
 
-        if serializer.is_valid():
-            serializer.save()
-            print("SUCCESS!!!")
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer = MovieSerializer(data=result)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            print(serializer.errors)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Invalid request": request.data}, status=status.HTTP_400_BAD_REQUEST)

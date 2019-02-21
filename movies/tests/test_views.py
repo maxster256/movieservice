@@ -31,7 +31,7 @@ class GetAllMoviesTest(TestCase):
             imdb_rating="8.8", imdb_votes="NA", imdb_id="1000001", movie_type="NA", DVD="NA", box_office='NA',
             production="US", website="socialnetwork.com")
 
-    def test_get_all_puppies(self):
+    def test_get_all_movies(self):
         # get API response
         response = client.get(reverse('movies'))
         # get data from db

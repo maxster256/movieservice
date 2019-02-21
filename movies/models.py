@@ -39,8 +39,17 @@ class Movie(models.Model):
     def __repr__(self):
         return self.Title
 
+    # def __str__(self):
+    #     return self.Title
+
 
 class MovieRating(models.Model):
     Ratings = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='Ratings')
     Source = models.CharField(max_length=255)
     Value = models.CharField(max_length=255)
+
+
+class MovieComment(models.Model):
+    CommentedMovieID = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='CommentedMovieID')
+    Comment = models.TextField()
+    Date = models.DateField(auto_now=True, editable=False)

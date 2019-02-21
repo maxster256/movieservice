@@ -1,6 +1,13 @@
 from django.conf.urls import url
 from . import views
 
+from rest_framework.routers import SimpleRouter
+
+from .views import MovieCommentsViewSet, Top
+
+router = SimpleRouter()
+router.register("comments", MovieCommentsViewSet, basename='comment')
+router.register("top", Top)
 
 urlpatterns = [
     # url(
@@ -14,3 +21,5 @@ urlpatterns = [
         name='movies'
     )
 ]
+
+urlpatterns += router.urls
