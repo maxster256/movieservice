@@ -6,10 +6,10 @@ class Movie(models.Model):
     Stores a single movie entry.
     """
     Title = models.CharField(max_length=255)
-    Year = models.CharField(max_length=4)
-    Rated = models.CharField(max_length=5)
+    Year = models.CharField(max_length=255)
+    Rated = models.CharField(max_length=255)
     Released = models.CharField(max_length=255)
-    Runtime = models.CharField(max_length=12)
+    Runtime = models.CharField(max_length=255)
 
     Genre = models.CharField(max_length=255)
     Director = models.CharField(max_length=255)
@@ -24,8 +24,8 @@ class Movie(models.Model):
 
     Poster = models.CharField(max_length=255)
 
-    Metascore = models.CharField(max_length=3)
-    imdbRating = models.CharField(max_length=4)
+    Metascore = models.CharField(max_length=255)
+    imdbRating = models.CharField(max_length=255)
     imdbVotes = models.CharField(max_length=255)
     imdbID = models.CharField(max_length=255)
 
@@ -38,9 +38,6 @@ class Movie(models.Model):
 
     def __repr__(self):
         return self.Title
-
-    # def __str__(self):
-    #     return self.Title
 
 
 class MovieRating(models.Model):

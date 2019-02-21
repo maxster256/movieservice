@@ -3,11 +3,12 @@ from . import views
 
 from rest_framework.routers import SimpleRouter
 
-from .views import MovieCommentsViewSet, Top
+from .views import MovieCommentsViewSet, TopListView, MovieViewSet
 
 router = SimpleRouter()
 router.register("comments", MovieCommentsViewSet, basename='comment')
-router.register("top", Top)
+router.register("movies", MovieViewSet, basename='movies')
+
 
 urlpatterns = [
     # url(
@@ -15,11 +16,13 @@ urlpatterns = [
     #     views.get_delete_update_puppy,
     #     name='get_delete_update_puppy'
     # ),
-    url(
-        r'^movies/$',
-        views.movies,
-        name='movies'
-    )
+    # url(
+    #     r'^movies/$',
+    #     views.movies,
+    #     name='movies'
+    # ),
+    url(r'^top/$', TopListView.as_view(), name='top'),
+    # url(r'^movies/$', MovieListCreateView.as_view(), name='movie')
 ]
 
 urlpatterns += router.urls

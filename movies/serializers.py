@@ -25,7 +25,6 @@ class MovieRatingSerializer(serializers.ModelSerializer):
         model = MovieRating
         fields = ('Source', 'Value')
 
-
 class MovieSerializer(WritableNestedModelSerializer):
     Ratings = MovieRatingSerializer(many=True, allow_null=True)
 
@@ -34,3 +33,9 @@ class MovieSerializer(WritableNestedModelSerializer):
         fields = ('Title', 'Year', 'Rated', 'Released', 'Runtime', 'Genre', 'Director', 'Writer', 'Actors', 'Plot',
                   'Language', 'Country', 'Awards', 'Poster', 'Metascore', 'Ratings', 'imdbRating', 'imdbVotes',
                   'imdbID', 'Type', 'DVD', 'BoxOffice', 'Production', 'Website', 'Response')
+
+
+class MovieTitleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ('Title', )
