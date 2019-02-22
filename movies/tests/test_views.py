@@ -84,10 +84,10 @@ class GetAllCommentsTest(TestCase):
         self.view = MovieCommentsViewSet.as_view({'get': 'list'})
 
         MovieComment.objects.create(
-            commented_movie_id_id=7, comment="That was a great one!", date=datetime.date.today()
+            movie_id=7, comment="That was a great one!", date=datetime.date.today()
         )
         MovieComment.objects.create(
-            commented_movie_id_id=5, comment="Loved it!", date=datetime.date.today() - datetime.timedelta(1)
+            movie_id=5, comment="Loved it!", date=datetime.date.today() - datetime.timedelta(1)
         )
 
     def test_get_all_comments(self):
@@ -121,7 +121,7 @@ class AddNewCommentTest(TestCase):
             production='Sony', website='fightclub.com', response='True',
         )
 
-        self.valid_payload = {'commented_movie_id': 1, "comment": 'Loved that one!'}
+        self.valid_payload = {'movie': 1, "comment": 'Loved that one!'}
         self.invalid_payload = {'CommentMovieTitle': 'Killing Me Softly', "CommentContents": 'What a duce?'}
 
     def test_add_valid_comment(self):
@@ -129,7 +129,7 @@ class AddNewCommentTest(TestCase):
         response = self.view(request)
 
         self.assertEqual(response.data['comment'], self.valid_payload['comment'])
-        self.assertEqual(response.data['commented_movie_id'], self.valid_payload['commented_movie_id'])
+        self.assertEqual(response.data['movie'], self.valid_payload['movie'])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_add_invalid_title(self):
@@ -157,10 +157,10 @@ class TopTest(TestCase):
         )
 
         MovieComment.objects.create(
-            commented_movie_id_id=1, comment="That was a great one!", date=datetime.date.today()
+            movie_id=1, comment="That was a great one!", date=datetime.date.today()
         )
         MovieComment.objects.create(
-            commented_movie_id_id=1, comment="Loved it!", date=datetime.date.today() - datetime.timedelta(1)
+            movie_id=1, comment="Loved it!", date=datetime.date.today() - datetime.timedelta(1)
         )
 
         Movie.objects.create(
@@ -184,19 +184,19 @@ class TopTest(TestCase):
 
         counted_movie_comments = MovieComment.objects.filter(
             date__range=(from_date, to_date)
-        ).values('commented_movie_id_id').annotate(
-            comments_count=Count('commented_movie_id')
-        ).order_by('-comments_count')
+        ).values('movie_id').annotate(
+            total_comments=Count('movie')
+        ).order_by('-total_comments')
 
         # Add ranking position to each of the movies
         prev_count, prev_rank_pos = None, 0
 
         for movie in counted_movie_comments:
-            if prev_count != movie['comments_count']:
+            if prev_count != movie['total_comments']:
                 prev_rank_pos += 1
-                prev_count = movie['comments_count']
+                prev_count = movie['total_comments']
 
-            movie['rank_position'] = prev_rank_pos
+            movie['rank'] = prev_rank_pos
 
         serializer = TopSerializer(counted_movie_comments, many=True)
 
