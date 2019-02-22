@@ -79,7 +79,7 @@ class MovieViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filter_fields = ('year', 'director', 'actors', 'language', )
     search_fields = ('title', 'director')
-    ordering_fields = ('title', 'year', 'director', 'type')
+    ordering_fields = ('title', 'year', 'director', 'movie_type')
     ordering = ('year', )
 
     def get_serializer_class(self):
