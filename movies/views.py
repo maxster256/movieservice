@@ -21,7 +21,7 @@ class MovieCommentsViewSet(viewsets.ModelViewSet):
     queryset = MovieComment.objects.all()
     serializer_class = MovieCommentSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filter_fields = ('commented_movie_id',)
+    filter_fields = ('movie',)
 
 
 class TopListView(generics.ListAPIView):
@@ -46,19 +46,19 @@ class TopListView(generics.ListAPIView):
         # Returns number of comments for each movie ID in descending order
         counted_movie_comments = MovieComment.objects.filter(
             date__range=(from_date, to_date)
-        ).values('commented_movie_id_id').annotate(
-            comments_count=Count('commented_movie_id')
-        ).order_by('-comments_count')
+        ).values('movie_id').annotate(
+            total_comments=Count('movie')
+        ).order_by('-total_comments')
 
         # Add ranking position to each of the movies
         prev_count, prev_rank_pos = None, 0
 
         for movie in counted_movie_comments:
-            if prev_count != movie['comments_count']:
+            if prev_count != movie['total_comments']:
                 prev_rank_pos += 1
-                prev_count = movie['comments_count']
+                prev_count = movie['total_comments']
 
-            movie['rank_position'] = prev_rank_pos
+            movie['rank'] = prev_rank_pos
 
         serializer = TopSerializer(counted_movie_comments, many=True)
         return Response(serializer.data)

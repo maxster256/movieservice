@@ -5,19 +5,19 @@ from .models import Movie, MovieRating, MovieComment
 
 
 class TopSerializer(serializers.ModelSerializer):
-    comments_count = serializers.IntegerField()
-    rank_position = serializers.IntegerField()
+    total_comments = serializers.IntegerField()
+    rank = serializers.IntegerField()
     # Date = serializers.DateField()
 
     class Meta:
         model = MovieComment
-        fields = ('commented_movie_id_id', 'rank_position', 'comments_count')
+        fields = ('movie_id', 'rank', 'total_comments')
 
 
 class MovieCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieComment
-        fields = ('commented_movie_id', 'comment', 'date')
+        fields = ('movie', 'comment', 'date')
 
 
 class MovieRatingSerializer(serializers.ModelSerializer):

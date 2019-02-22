@@ -47,6 +47,6 @@ class MovieRating(models.Model):
 
 
 class MovieComment(models.Model):
-    commented_movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='commented_movie_id')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='movie')
     comment = models.TextField()
     date = models.DateField(auto_now=True, editable=False)
