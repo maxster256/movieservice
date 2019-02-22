@@ -11,18 +11,7 @@ router.register("movies", MovieViewSet, base_name='movies')
 
 
 urlpatterns = [
-    # url(
-    #     r'^api/v1/puppies/(?P<pk>[0-9]+)$',
-    #     views.get_delete_update_puppy,
-    #     name='get_delete_update_puppy'
-    # ),
-    # url(
-    #     r'^movies/$',
-    #     views.movies,
-    #     name='movies'
-    # ),
     url(r'^top/$', TopListView.as_view(), name='top'),
-    # url(r'^movies/$', MovieListCreateView.as_view(), name='movie')
 ]
 
 urlpatterns += router.urls

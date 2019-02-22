@@ -5,38 +5,38 @@ from .models import Movie, MovieRating, MovieComment
 
 
 class TopSerializer(serializers.ModelSerializer):
-    CommentsCount = serializers.IntegerField()
-    RankPosition = serializers.IntegerField()
+    comments_count = serializers.IntegerField()
+    rank_position = serializers.IntegerField()
     # Date = serializers.DateField()
 
     class Meta:
         model = MovieComment
-        fields = ('CommentedMovieID_id', 'RankPosition', 'CommentsCount')
+        fields = ('commented_movie_id', 'rank_position', 'comments_count')
 
 
 class MovieCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieComment
-        fields = ('CommentedMovieID', 'Comment', 'Date')
+        fields = ('commented_movie_id', 'comment', 'date')
 
 
 class MovieRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovieRating
-        fields = ('Source', 'Value')
+        fields = ('source', 'value')
 
 
 class MovieSerializer(WritableNestedModelSerializer):
-    Ratings = MovieRatingSerializer(many=True, allow_null=True)
+    ratings = MovieRatingSerializer(many=True, allow_null=True)
 
     class Meta:
         model = Movie
-        fields = ('Title', 'Year', 'Rated', 'Released', 'Runtime', 'Genre', 'Director', 'Writer', 'Actors', 'Plot',
-                  'Language', 'Country', 'Awards', 'Poster', 'Metascore', 'Ratings', 'imdbRating', 'imdbVotes',
-                  'imdbID', 'Type', 'DVD', 'BoxOffice', 'Production', 'Website', 'Response')
+        fields = ('title', 'year', 'rated', 'released', 'runtime', 'genre', 'director', 'writer', 'actors', 'plot',
+                  'language', 'country', 'awards', 'poster', 'metascore', 'ratings', 'imdbrating', 'imdbvotes',
+                  'imdbid', 'movie_type', 'dvd', 'boxoffice', 'production', 'website', 'response')
 
 
 class MovieTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('Title', )
+        fields = ('title', )

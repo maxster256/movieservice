@@ -5,48 +5,48 @@ class Movie(models.Model):
     """
     Stores a single movie entry.
     """
-    Title = models.CharField(max_length=255)
-    Year = models.CharField(max_length=255)
-    Rated = models.CharField(max_length=255)
-    Released = models.CharField(max_length=255)
-    Runtime = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
+    year = models.CharField(max_length=255)
+    rated = models.CharField(max_length=255)
+    released = models.CharField(max_length=255)
+    runtime = models.CharField(max_length=255)
 
-    Genre = models.CharField(max_length=255)
-    Director = models.CharField(max_length=255)
-    Writer = models.CharField(max_length=1024)
-    Actors = models.CharField(max_length=255)
+    genre = models.CharField(max_length=255)
+    director = models.CharField(max_length=255)
+    writer = models.CharField(max_length=1024)
+    actors = models.CharField(max_length=255)
 
-    Plot = models.TextField()
+    plot = models.TextField()
 
-    Language = models.CharField(max_length=255)
-    Country = models.CharField(max_length=255)
-    Awards = models.TextField()
+    language = models.CharField(max_length=255)
+    country = models.CharField(max_length=255)
+    awards = models.TextField()
 
-    Poster = models.CharField(max_length=255)
+    poster = models.CharField(max_length=255)
 
-    Metascore = models.CharField(max_length=255)
-    imdbRating = models.CharField(max_length=255)
-    imdbVotes = models.CharField(max_length=255)
-    imdbID = models.CharField(max_length=255)
+    metascore = models.CharField(max_length=255)
+    imdbrating = models.CharField(max_length=255)
+    imdbvotes = models.CharField(max_length=255)
+    imdbid = models.CharField(max_length=255)
 
-    Type = models.CharField(max_length=255)
-    DVD = models.CharField(max_length=255)
-    BoxOffice = models.CharField(max_length=255)
-    Production = models.CharField(max_length=255)
-    Website = models.CharField(max_length=255)
-    Response = models.CharField(max_length=255)
+    movie_type = models.CharField(max_length=255)
+    dvd = models.CharField(max_length=255)
+    boxoffice = models.CharField(max_length=255)
+    production = models.CharField(max_length=255)
+    website = models.CharField(max_length=255)
+    response = models.CharField(max_length=255)
 
     def __repr__(self):
-        return self.Title
+        return self.title
 
 
 class MovieRating(models.Model):
-    Ratings = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='Ratings')
-    Source = models.CharField(max_length=255)
-    Value = models.CharField(max_length=255)
+    ratings = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='ratings')
+    source = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
 
 
 class MovieComment(models.Model):
-    CommentedMovieID = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='CommentedMovieID')
-    Comment = models.TextField()
-    Date = models.DateField(auto_now=True, editable=False)
+    commented_movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='commented_movie_id')
+    comment = models.TextField()
+    date = models.DateField(auto_now=True, editable=False)

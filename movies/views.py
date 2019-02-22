@@ -20,7 +20,7 @@ class MovieCommentsViewSet(viewsets.ModelViewSet):
     queryset = MovieComment.objects.all()
     serializer_class = MovieCommentSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filter_fields = ('CommentedMovieID',)
+    filter_fields = ('commented_movie_id',)
 
 
 class TopListView(generics.ListAPIView):
@@ -44,20 +44,20 @@ class TopListView(generics.ListAPIView):
 
         # Returns number of comments for each movie ID in descending order
         counted_movie_comments = MovieComment.objects.filter(
-            Date__range=(from_date, to_date)
-        ).values('CommentedMovieID_id').annotate(
-            CommentsCount=Count('CommentedMovieID')
-        ).order_by('-CommentsCount')
+            date__range=(from_date, to_date)
+        ).values('commented_movie_id_id').annotate(
+            comments_count=Count('commented_movie_id')
+        ).order_by('-comments_count')
 
         # Add ranking position to each of the movies
         prev_count, prev_rank_pos = None, 0
 
         for movie in counted_movie_comments:
-            if prev_count != movie['CommentsCount']:
+            if prev_count != movie['comments_count']:
                 prev_rank_pos += 1
-                prev_count = movie['CommentsCount']
+                prev_count = movie['comments_count']
 
-            movie['RankPosition'] = prev_rank_pos
+            movie['rank_position'] = prev_rank_pos
 
         serializer = TopSerializer(counted_movie_comments, many=True)
         return Response(serializer.data)
@@ -76,10 +76,10 @@ class MovieViewSet(viewsets.ModelViewSet):
 
     # Defines filters used for the view
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    filter_fields = ('Year', 'Rated', 'Director', 'Actors', 'Language', 'Type')
-    search_fields = ('Title', 'Director')
-    ordering_fields = ('Title', 'Year', 'Director')
-    ordering = ('Year',)
+    filter_fields = ('year', 'director', 'actors', 'language',)
+    search_fields = ('title', 'director')
+    ordering_fields = ('title', 'year', 'director', 'type')
+    ordering = ('year',)
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -90,12 +90,21 @@ class MovieViewSet(viewsets.ModelViewSet):
     def create(self, request, **kwargs):
         self.serializer_class = MovieTitleSerializer
 
-        if 'Title' in request.data:
-            movie_name = request.data.get('Title', )
+        if 'title' in request.data:
+            movie_name = request.data.get('title', )
 
             payload = {'t': movie_name, 'apikey': 'b3a374e7'}
             omdb_data = requests.get('https://www.omdbapi.com/', params=payload)
             result = omdb_data.json()
+
+            result = {k.lower(): v for k, v in result.items()}
+            result['movie_type'] = result.pop('type')
+
+            for element in result['ratings']:
+                for key, value in element.items():
+                    element[key.lower()] = element.pop(key)
+
+            print(result)
 
             serializer = MovieSerializer(data=result)
 
