@@ -6,6 +6,14 @@ from `OMDB API`.
 It also allows users to add comments about movies added to the database as well as see the ranking of top movies, 
 where position is determined by number of comments made to each movie.
 
+## Running project on local machine
+
+Simply clone this repo and run
+```bash
+python3 manage.py runserver
+```
+to start the development server.
+
 ## API
 
 The API documentation is available [via Postman](https://documenter.getpostman.com/view/4296094/S11ExM3C).

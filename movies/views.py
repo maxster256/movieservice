@@ -93,37 +93,35 @@ class MovieViewSet(viewsets.ModelViewSet):
 
         if 'title' in request.data:
             # Get title of movie to add to the database
-            movie_name = request.data.get('title', )
+            movie_name = request.data.get('title')
 
-            # Get data from OMDB API
+            # Get data about the movie from OMDB API
             payload = {'t': movie_name, 'apikey': settings.OMDB_API_KEY}
             omdb_data = requests.get('https://www.omdbapi.com/', params=payload)
             result = omdb_data.json()
 
-            # Convert results from OMDB into serializer-friendly format
-            result = {k.lower(): v for k, v in result.items()}
-
-            result['movie_type'] = result.pop('type')
-
-            for element in result['ratings']:
-                for key, value in element.items():
-                    element[key.lower()] = element.pop(key)
-
-            # If movie was already added to the database
-            if Movie.objects.filter(title=result['title']).exists():
-                return Response({"Movie already present in the database": movie_name},
-                                status=status.HTTP_409_CONFLICT)
-
-            # Initialize the serializer with converted request data
-            serializer = MovieSerializer(data=result)
-
-            if serializer.is_valid():
-                # Deserialize data and store in database
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if Movie.objects.filter(title=result['Title']).exists():
+                # If movie was already added to the database get the object and return it
+                serializer = MovieSerializer(Movie.objects.filter(title=result['Title']).first())
+                return Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                # Return error if invalid data provided
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # Convert results from OMDB into serializer-friendly format
+                result = {k.lower(): v for k, v in result.items()}
+                result['movie_type'] = result.pop('type')
 
+                for element in result['ratings']:
+                    for key, value in element.items():
+                        element[key.lower()] = element.pop(key)
+
+                # Initialize the serializer with converted request data
+                serializer = MovieSerializer(data=result)
+
+                if serializer.is_valid():
+                    # Deserialize data and store in database
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                else:
+                    # Return error if invalid data provided
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"Invalid request": request.data}, status=status.HTTP_400_BAD_REQUEST)
