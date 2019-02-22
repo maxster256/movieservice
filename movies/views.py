@@ -1,5 +1,6 @@
 import datetime, django_filters, requests
 from django.db.models import Count
+from django.conf import settings
 
 from rest_framework.response import Response
 from rest_framework import status, generics, viewsets
@@ -95,7 +96,7 @@ class MovieViewSet(viewsets.ModelViewSet):
             movie_name = request.data.get('title', )
 
             # Get data from OMDB API
-            payload = {'t': movie_name, 'apikey': 'b3a374e7'}
+            payload = {'t': movie_name, 'apikey': settings.OMDB_API_KEY}
             omdb_data = requests.get('https://www.omdbapi.com/', params=payload)
             result = omdb_data.json()
 
@@ -108,7 +109,7 @@ class MovieViewSet(viewsets.ModelViewSet):
                 for key, value in element.items():
                     element[key.lower()] = element.pop(key)
 
-            # If movie was already added to the databae
+            # If movie was already added to the database
             if Movie.objects.filter(title=result['title']).exists():
                 return Response({"Movie already present in the database": movie_name},
                                 status=status.HTTP_409_CONFLICT)

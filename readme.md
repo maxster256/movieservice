@@ -18,12 +18,12 @@ List of movies can be filtered, sorted and searched through via API calls or gen
 
 The excellent `Django Rest Framework` was used due to the number of powerful features provided for the user, including:
 - Serializers, which allow for easy model querysets/instances validation and conversion to native datatypes
-- Browsable API, providing approachable interface for interacting with API
+- Browsable API, providing approachable interface for interacting with API.
 
 `django_filters` were also used to provide the filtering capability, and `WritableNestedModelSerializer` helped with 
 handling the response from `OMDB API`. Excellent `requests` helped to get the data from `OMDB API`.
 
 ## Check it out!
 
-The project is available live at
+The project is available live, hosted [at Heroku](https://djangomovieservice.herokuapp.com/).
 
