@@ -76,10 +76,10 @@ class MovieViewSet(viewsets.ModelViewSet):
 
     # Defines filters used for the view
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    filter_fields = ('year', 'director', 'actors', 'language',)
+    filter_fields = ('year', 'director', 'actors', 'language', )
     search_fields = ('title', 'director')
     ordering_fields = ('title', 'year', 'director', 'type')
-    ordering = ('year',)
+    ordering = ('year', )
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -91,27 +91,37 @@ class MovieViewSet(viewsets.ModelViewSet):
         self.serializer_class = MovieTitleSerializer
 
         if 'title' in request.data:
+            # Get title of movie to add to the database
             movie_name = request.data.get('title', )
 
+            # Get data from OMDB API
             payload = {'t': movie_name, 'apikey': 'b3a374e7'}
             omdb_data = requests.get('https://www.omdbapi.com/', params=payload)
             result = omdb_data.json()
 
+            # Convert results from OMDB into serializer-friendly format
             result = {k.lower(): v for k, v in result.items()}
+
             result['movie_type'] = result.pop('type')
 
             for element in result['ratings']:
                 for key, value in element.items():
                     element[key.lower()] = element.pop(key)
 
-            print(result)
+            # If movie was already added to the databae
+            if Movie.objects.filter(title=result['title']).exists():
+                return Response({"Movie already present in the database": movie_name},
+                                status=status.HTTP_409_CONFLICT)
 
+            # Initialize the serializer with converted request data
             serializer = MovieSerializer(data=result)
 
             if serializer.is_valid():
+                # Deserialize data and store in database
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
+                # Return error if invalid data provided
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
