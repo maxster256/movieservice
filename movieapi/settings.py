@@ -25,7 +25,7 @@ SECRET_KEY = '!tm4=k3vr6o57y!p9ehuldaqqb1v6=he%r#0p$osi4rzw!dge!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['djangomovieservice.herokuapp.com','127.0.0.1']
 
 # Rest framework
 
