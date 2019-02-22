@@ -11,7 +11,7 @@ class TopSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MovieComment
-        fields = ('commented_movie_id', 'rank_position', 'comments_count')
+        fields = ('commented_movie_id_id', 'rank_position', 'comments_count')
 
 
 class MovieCommentSerializer(serializers.ModelSerializer):
