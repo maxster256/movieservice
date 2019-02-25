@@ -62,15 +62,16 @@ class TopListView(generics.ListAPIView):
 
             movie['rank'] = prev_rank_pos
 
-        # Get movies with ID's not in counted_movie_comments
+        # Get movies which were not commented
         not_commented = Movie.objects.exclude(
             id__in=counted_movie_comments.values_list('movie_id')
         ).values('id').annotate(
             movie_id=F('id'),
-            total_comments=Value('0', output_field=CharField()),
+            total_comments=Value(0, output_field=IntegerField()),
             rank=Value(prev_rank_pos+1, output_field=IntegerField()),
         ).values('movie_id', 'total_comments', 'rank')
 
+        # Combine two queries together
         combined = list(chain(counted_movie_comments, not_commented))
 
         serializer = TopSerializer(combined, many=True)
