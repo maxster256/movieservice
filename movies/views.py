@@ -1,5 +1,7 @@
 import datetime, django_filters, requests
-from django.db.models import Count
+from itertools import chain
+
+from django.db.models import Count, CharField, Value, F, IntegerField
 from django.conf import settings
 
 from rest_framework.response import Response
@@ -60,7 +62,18 @@ class TopListView(generics.ListAPIView):
 
             movie['rank'] = prev_rank_pos
 
-        serializer = TopSerializer(counted_movie_comments, many=True)
+        # Get movies with ID's not in counted_movie_comments
+        not_commented = Movie.objects.exclude(
+            id__in=counted_movie_comments.values_list('movie_id')
+        ).values('id').annotate(
+            movie_id=F('id'),
+            total_comments=Value('0', output_field=CharField()),
+            rank=Value(prev_rank_pos+1, output_field=IntegerField()),
+        ).values('movie_id', 'total_comments', 'rank')
+
+        combined = list(chain(counted_movie_comments, not_commented))
+
+        serializer = TopSerializer(combined, many=True)
         return Response(serializer.data)
 
 
